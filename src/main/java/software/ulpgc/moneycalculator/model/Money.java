@@ -1,4 +1,4 @@
-package is2.model;
+package software.ulpgc.moneycalculator.model;
 
 import java.util.Objects;
 
