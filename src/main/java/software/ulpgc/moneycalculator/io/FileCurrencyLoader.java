@@ -1,5 +1,7 @@
 package software.ulpgc.moneycalculator.io;
 
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import software.ulpgc.moneycalculator.model.Currency;
@@ -32,10 +34,12 @@ public class FileCurrencyLoader implements CurrencyLoader {
     private List<Currency> loadCurrencies(String json) {
         List<Currency> list = new ArrayList<>();
         JsonObject jsonObject = new Gson().fromJson(json, JsonObject.class);
-        Map<String, Object> symbols = new Gson().fromJson(jsonObject.get("symbols"), Map.class);
+
+        Type mapType = new TypeToken<Map<String, String>>(){}.getType();
+        Map<String, String> symbols = new Gson().fromJson(jsonObject.get("symbols"), mapType);
 
         for (String symbol : symbols.keySet()) {
-            list.add(new Currency(symbol, (String) symbols.get(symbol), ""));
+            list.add(new Currency(symbol, symbols.get(symbol), ""));
         }
         return list;
     }
