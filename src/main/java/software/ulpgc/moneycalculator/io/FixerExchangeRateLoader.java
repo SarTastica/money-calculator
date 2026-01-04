@@ -28,14 +28,27 @@ public class FixerExchangeRateLoader implements ExchangeRateLoader {
         JsonObject rates = jsonObject.getAsJsonObject("rates");
         LocalDate date = LocalDate.parse(jsonObject.get("date").getAsString());
 
-        double rateFrom = rates.get(from.getIsoCode()).getAsDouble();
-        double rateTo = rates.get(to.getIsoCode()).getAsDouble();
+        double rateFrom = getRateValue(from.getIsoCode(), rates);
+        double rateTo = getRateValue(to.getIsoCode(), rates);
 
         return new ExchangeRate(from, to, date, rateTo / rateFrom);
     }
 
+    private double getRateValue(String isoCode, JsonObject rates) {
+        if (isoCode.equals("EUR")) {
+            return 1.0;
+        }
+        if (rates.has(isoCode)) {
+            return rates.get(isoCode).getAsDouble();
+        }
+        throw new IllegalArgumentException("La API no tiene datos para la moneda: " + isoCode);
+    }
+
     private String loadJson() throws IOException {
-        InputStream is = getClass().getResourceAsStream("/exchangerates.json");
-        return new String(is.readAllBytes());
+        java.net.URL url = new java.net.URL("https://api.frankfurter.app/latest?from=EUR");
+
+        try (InputStream is = url.openStream()) {
+            return new String(is.readAllBytes());
+        }
     }
 }
