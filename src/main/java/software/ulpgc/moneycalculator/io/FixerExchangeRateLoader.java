@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.Map;
 
 public class FixerExchangeRateLoader implements ExchangeRateLoader {
 
@@ -19,14 +18,29 @@ public class FixerExchangeRateLoader implements ExchangeRateLoader {
             String json = loadJson();
             return toExchangeRate(json, from, to);
         } catch (IOException e) {
-            throw new RuntimeException("No se pudieron cargar las tasas de cambio", e);
+            throw new RuntimeException("No se pudieron cargar las tasas de cambio.", e);
+        }
+    }
+
+    private String loadJson() throws IOException {
+        URL url = new URL("https://open.er-api.com/v6/latest/EUR");
+
+        try (InputStream is = url.openStream()) {
+            return new String(is.readAllBytes());
+        } catch (IOException e) {
+            System.out.println("Usando respaldo local por fallo de red.");
+            try (InputStream is = getClass().getResourceAsStream("/exchangerates.json")) {
+                if (is == null) throw new IOException("No backup file found");
+                return new String(is.readAllBytes());
+            }
         }
     }
 
     private ExchangeRate toExchangeRate(String json, Currency from, Currency to) {
         JsonObject jsonObject = new Gson().fromJson(json, JsonObject.class);
         JsonObject rates = jsonObject.getAsJsonObject("rates");
-        LocalDate date = LocalDate.parse(jsonObject.get("date").getAsString());
+
+        LocalDate date = LocalDate.now();
 
         double rateFrom = getRateValue(from.getIsoCode(), rates);
         double rateTo = getRateValue(to.getIsoCode(), rates);
@@ -35,20 +49,8 @@ public class FixerExchangeRateLoader implements ExchangeRateLoader {
     }
 
     private double getRateValue(String isoCode, JsonObject rates) {
-        if (isoCode.equals("EUR")) {
-            return 1.0;
-        }
-        if (rates.has(isoCode)) {
-            return rates.get(isoCode).getAsDouble();
-        }
-        throw new IllegalArgumentException("La API no tiene datos para la moneda: " + isoCode);
-    }
-
-    private String loadJson() throws IOException {
-        java.net.URL url = new java.net.URL("https://api.frankfurter.app/latest?from=EUR");
-
-        try (InputStream is = url.openStream()) {
-            return new String(is.readAllBytes());
-        }
+        if (isoCode.equals("EUR")) return 1.0;
+        if (rates.has(isoCode)) return rates.get(isoCode).getAsDouble();
+        throw new IllegalArgumentException("La API no tiene datos para: " + isoCode);
     }
 }

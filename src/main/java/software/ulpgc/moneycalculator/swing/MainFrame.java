@@ -29,8 +29,12 @@ public class MainFrame extends JFrame {
 
         JButton calculateButton = new JButton("Calculate");
         calculateButton.addActionListener(e -> {
-            if (commands.containsKey("exchange")) {
-                commands.get("exchange").execute();
+            try {
+                if (commands.containsKey("exchange")) {
+                    commands.get("exchange").execute();
+                }
+            } catch (IllegalArgumentException ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error de Moneda", JOptionPane.ERROR_MESSAGE);
             }
         });
 

@@ -51,7 +51,6 @@ public class ExchangeMoneyCommandTest {
 
         command.execute();
 
-        // 100 EUR * 1.5 = 150 USD
         assertEquals(150.0, result[0].getAmount());
         assertEquals(usd, result[0].getCurrency());
     }
