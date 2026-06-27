@@ -16,7 +16,6 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
         FlatLightLaf.setup();
-
         MainFrame mainFrame = new MainFrame();
 
         CurrencyLoader currencyLoader = new FileCurrencyLoader("/currencies.json");
