@@ -33,13 +33,24 @@ public class MainFrame extends JFrame {
                 if (commands.containsKey("exchange")) {
                     commands.get("exchange").execute();
                 }
-            } catch (IllegalArgumentException ex) {
-                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error de Moneda", JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Error en la conversión: " + ex.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        JButton swapButton = new JButton("Swap");
+        swapButton.addActionListener(e -> {
+            if (commands.containsKey("swap")) {
+                commands.get("swap").execute();
             }
         });
 
         JPanel centerPanel = new JPanel();
         centerPanel.add(moneyDialog);
+        centerPanel.add(swapButton);
         centerPanel.add(new JLabel(" to "));
         centerPanel.add(currencyDialog);
         centerPanel.add(calculateButton);

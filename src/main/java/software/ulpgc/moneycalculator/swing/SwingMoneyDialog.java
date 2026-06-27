@@ -48,4 +48,10 @@ public class SwingMoneyDialog extends JPanel implements MoneyDialog {
             return new Money(0, (Currency) currencySelector.getSelectedItem());
         }
     }
+
+    @Override
+    public void setCurrency(Currency currency) {
+        currencySelector.setSelectedItem(currency);
+    }
+
 }

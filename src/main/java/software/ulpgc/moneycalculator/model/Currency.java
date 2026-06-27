@@ -6,6 +6,7 @@ public class Currency {
     private final String isoCode;
     private final String name;
     private final String symbol;
+    public static final Currency Null = new Currency("XXX", "Unknown", "??");
 
     public Currency(String isoCode, String name, String symbol) {
         this.isoCode = Objects.requireNonNull(isoCode, "ISO Code cannot be null").toUpperCase();
